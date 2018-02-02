@@ -3,7 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ijkplayer.iml" filepath="$PROJECT_DIR$/ijkplayer.iml" />
+      <module fileurl="file://D:\projects\ijkplayer-rtsp\ijkplayer.iml" filepath="D:\projects\ijkplayer-rtsp\ijkplayer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ijkplayer-rtsp.iml" filepath="$PROJECT_DIR$/ijkplayer-rtsp.iml" />
     </modules>
   </component>
 </project>

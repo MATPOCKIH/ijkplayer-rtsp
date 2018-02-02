@@ -18,15 +18,21 @@
 package com.xwysun.ijkplayer.media;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -34,8 +40,8 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.MediaController;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
@@ -59,7 +65,7 @@ import tv.danmaku.ijk.media.player.misc.IMediaFormat;
 import tv.danmaku.ijk.media.player.misc.ITrackInfo;
 import tv.danmaku.ijk.media.player.misc.IjkMediaFormat;
 
-public class IjkVideoView extends FrameLayout implements MediaController.MediaPlayerControl {
+public class IjkVideoView extends FrameLayout implements LiveController.MediaPlayerControl {
     private String TAG = "IjkVideoView";
     // settable by the client
     private Uri mUri;
@@ -73,6 +79,8 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     private static final int STATE_PLAYING = 3;
     private static final int STATE_PAUSED = 4;
     private static final int STATE_PLAYBACK_COMPLETED = 5;
+
+    private boolean isFullScreen=false;
 
     // mCurrentState is a VideoView object's current state.
     // mTargetState is the state that a method caller intends to reach.
@@ -101,6 +109,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     private boolean mCanPause = true;
     private boolean mCanSeekBack = true;
     private boolean mCanSeekForward = true;
+    private AppCompatActivity mActivity;
 
     /** Subtitle rendering widget overlaid on top of the video. */
     // private RenderingWidget mSubtitleWidget;
@@ -139,6 +148,35 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
         initVideoView(context);
     }
 
+    @Override
+    public void fullscreen(boolean isFullScreen) {
+        if (this.isFullScreen!=isFullScreen){
+            setFullScreen(isFullScreen);
+        }
+    }
+
+    private void setFullScreen(boolean fullScreen) {
+        if (mActivity == null){
+            Log.d(TAG, "setFullScreen: Activity is null");
+            return;
+        }
+        Log.d(TAG, fullScreen?"fullscreen":"not fullscreen");
+        if (fullScreen) {
+            View decorView = mActivity.getWindow().getDecorView();
+//            int option = View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            int option = View.SYSTEM_UI_FLAG_FULLSCREEN;;
+            decorView.setSystemUiVisibility(option);
+            mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+            mActivity.getSupportActionBar().hide();
+            mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else {
+            mActivity.getSupportActionBar().show();
+            mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+        isFullScreen=fullScreen;
+    }
+
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public IjkVideoView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
@@ -151,6 +189,12 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     // REMOVED: resolveAdjustedSize
 
     private void initVideoView(Context context) {
+        if (context instanceof AppCompatActivity){
+            mActivity= (AppCompatActivity) context;
+        }else {
+            Log.d(TAG, "initVideoView: context is not an Activity");
+            return;
+        }
         mAppContext = context.getApplicationContext();
         mSettings = new Settings(mAppContext);
 
@@ -230,6 +274,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     }
 
     public void setHudView(TableLayout tableLayout) {
+        tableLayout.setAlpha(0);
         mHudViewHolder = new InfoHudViewHolder(getContext(), tableLayout);
     }
 
@@ -410,7 +455,6 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             }
             mVideoWidth = mp.getVideoWidth();
             mVideoHeight = mp.getVideoHeight();
-
             int seekToPosition = mSeekWhenPrepared;  // mSeekWhenPrepared may be changed after seekTo() call
             if (seekToPosition != 0) {
                 seekTo(seekToPosition);
@@ -863,6 +907,12 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     @Override
     public boolean canSeekForward() {
         return mCanSeekForward;
+    }
+
+
+    @Override
+    public boolean isFullScreen() {
+        return isFullScreen;
     }
 
     @Override

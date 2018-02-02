@@ -25,11 +25,11 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.MediaController;
 
+
 import java.util.ArrayList;
 
-public class AndroidMediaController extends MediaController implements IMediaController {
+public class AndroidMediaController extends LiveController implements IMediaController {
     private ActionBar mActionBar;
-
     public AndroidMediaController(Context context, AttributeSet attrs) {
         super(context, attrs);
         initView(context);
@@ -73,6 +73,7 @@ public class AndroidMediaController extends MediaController implements IMediaCon
             view.setVisibility(View.GONE);
         mShowOnceArray.clear();
     }
+
 
     //----------
     // Extends
