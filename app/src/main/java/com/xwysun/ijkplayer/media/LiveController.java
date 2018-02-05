@@ -209,12 +209,8 @@ public class LiveController extends FrameLayout{
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
         );
-//        FrameLayout.LayoutParams thisParams = new FrameLayout.LayoutParams(
-//                view.getWidth(),
-//                view.getHeight()
-//        );
 //        setLayoutParams(thisParams);
-        setPadding(0,0,0,0);
+
         removeAllViews();
         View v = makeControllerView();
         addView(v, frameParams);
@@ -229,9 +225,7 @@ public class LiveController extends FrameLayout{
     protected View makeControllerView() {
         LayoutInflater inflate = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mRoot = inflate.inflate(R.layout.live_controller, null);
-
         initControllerView(mRoot);
-
         return mRoot;
     }
 
